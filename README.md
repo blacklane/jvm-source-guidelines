@@ -1,12 +1,25 @@
-## General guidelines
+# Blacklane's JVM Source Guideliens
 
-We start with a sensible set of code style guidelines from the official sources:
+This document represents Blacklane Engineering's guidelines on writing code in JVM languages. 
 
-- Kotlin: https://kotlinlang.org/docs/reference/coding-conventions.html
-- Java: https://google.github.io/styleguide/javaguide.html
-- Android: https://source.android.com/setup/contribute/code-style
+Table of Contents:
 
-A general rule of thumb is to make the code as concise as possible, but make sure to still keep the source readable. On top of the default guidelines, we apply a custom set of rules that we consider useful:
+  - [General guidelines](#general-guidelines)
+  - [Kotlin-specific guidelines](#kotlin-specific-guidelines)
+  - [Converting Java to Kotlin guidelines](#converting-java-to-kotlin-guidelines)
+  - [Android-specific guidelines](#android-specific-guidelines)
+  - [Applying these guidelines](#applying-these-guidelines)
+  - [Testing on Android](#testing-on-android)
+
+## General guidelines 
+
+We start with a standard set of code style guidelines from the official sources:
+
+- [Kotlin](https://kotlinlang.org/docs/reference/coding-conventions.html)
+- [Java](https://google.github.io/styleguide/javaguide.html)
+- [Android](https://source.android.com/setup/contribute/code-style)
+
+A general rule is to keep the code as concise as possible but also make sure that the source is still readable. On top of the default guidelines, we apply a custom set of rules that we consider useful:
 
 - Column width: **120** characters
 - Indentation: **2** characters
@@ -14,21 +27,22 @@ A general rule of thumb is to make the code as concise as possible, but make sur
 - Indentation type: **Space** _(not Tab)_
 - Field/property notation: **None** (don't use the _`m`_ prefix as seen in Hungarian notation)
     - ```java
-      String mName; // BAD
-      String name; // GOOD
+      String mName; // NICE
+      String name; // NOT NICE
       ```
-- Maximum joined blank lines: **1**. In general, don't use unnecessary line breaks, only use them to separate code blocks or logical code groups
+- Maximum joined blank lines: **1**. 
+    - In general, don't use unnecessary line breaks. Only use line breaks to separate code blocks or logical code groups
 - For tests annotated with `@Test`, don't use the `test` prefix in function name as it is unnecessary
-- Do not use any abbreviations at all, make all declarations simple and clear:
+- Don't use any abbreviations. All declarations should be simple and clear:
     - ```java
-      LinearLayout llMain;                 // BAD
-      LinearLayout mainContainer;          // GOOD
+      LinearLayout llMain;                 // NICE
+      LinearLayout mainContainer;          // NOT NICE
       ```
     - ```kotlin
-      lateinit var txtName: TextView;      // BAD
-      lateinit var nameTextView: TextView; // GOOD
+      lateinit var txtName: TextView;      // NICE
+      lateinit var nameTextView: TextView; // NOT NICE
       ```
-- In case of a single short annotation, we write them inline with the function/method or field/parameter declaration, for example:
+- For single short annotations, write them in line with the function/method or field/parameter declaration:
     - ```java
       @Autowired String appName;
       @Test void runningWithScissors() {
@@ -45,18 +59,17 @@ A general rule of thumb is to make the code as concise as possible, but make sur
 
 We have additional rules that apply to the Kotlin programming language:
 
-- If the function or property type can be easily inferred from the context, don't specify the type explicitly, like so:
+- If the function or property type can be easily inferred from the context, don't specify the type explicitly:
     - ```kotlin
       val hintText = "Don't click here"
       val user = UserModel("Mark", 31)
       val lock: ConcurrencyLock = Locks.createNewLock(this).withAcquire().setup()
       ```
 - Companion objects should be at the top of the class, instead of at the bottom
-- Constants are declared at the top of the file, more precisely
-    - Privately visible constants (`private const val`) are placed outside of the class declaration, in `UPPER_SNAKE_CASE`, and separated by a blank line from the class declaration
+- Constants are declared at the top of the file and more precisely:
+    - Privately visible constants (`private const val`) are placed outside of the class declaration, in `UPPER_SNAKE_CASE`, and separated from the class declaration by a blank line
     - Publicly visible constants (`const val`) are placed in the companion objects, also in `UPPER_SNAKE_CASE`
-    - Non-constant properties are written in normal `camelCase`, even `val` properties
-    - Example of these:
+    - Non-constant properties are written in `camelCase`, even `val` properties
     - ```kotlin
       private const val MY_PRIVATE_KEY = "private_key"
       // leave one empty line
@@ -67,45 +80,55 @@ We have additional rules that apply to the Kotlin programming language:
         }
       }
       ```
-- Classes (data and regular) with too many constructor arguments should be newlined at the opening parenthesis, like so:
-    - ```kotlin
-      data class PersonalInfo(
-        private val name: String,
-        private val age: Int = 30,
-        val hasProtection: Boolean = true,
-        val isValid: Boolean = false
-      ) {
-        // class code here
-      }
-      ```
-- The same goes for methods with many arguments, for example:
-    - ```kotlin
-      fun <T> computeUsingArguments(
-        argument0: T,
-        argument1: String,
-        argument2: Int = 0,
-        argument3: String = "<empty>",
-        argument4: String? = null,
-        errorCallback: (Throwable) -> Unit
-      ): T {
-        // function code here
-      }
-      ```
-- When appropriate, replace `null` checks with a `let` block
-- When appropriate, use the `apply` scoping function as an inline function body to return the created object after invoking functions on it. A good example is having setters in a builder class:
-    - ```kotlin
-      fun withUsername(username: String) = apply {
-        this.username = username
-      }
-      ```
-- In case of argument ambiguity, use named arguments to make the code more readable
-- When appropriate, use extension functions to make the code more readable
-- Use Kotlin's collection utility functions to make the code more readable
-- Use Kotlin's stream API and built-in functions like `filter`, `map`, etc.
-- If possible, replace builders with constructors (with named arguments and default argument values if necessary)
-- Be careful with `this` keyword and out-of-scope variables when using Kotlin's scoping functions 
+- To make the code clean and readable, we have a couple of simple suggestions
+    - Classes (data and regular) with multiple constructor arguments that span closer to our right margin (or over it) should be placed each on a new line, like so:
+        - ```kotlin
+          data class PersonalInfo(
+            private val name: String,
+            private val age: Int = 30,
+            val hasProtection: Boolean = true,
+            val isValid: Boolean = false
+          ) {
+            // class code here
+          }
+          ```
+    - Functions with many arguments should follow the same right margin rule and separate each argument with a new line, for example:
+        - ```kotlin
+          fun <T> computeUsingArguments(
+            argument0: T,
+            argument1: String,
+            argument2: Int = 0,
+            argument3: String = "<empty>",
+            argument4: String? = null,
+            errorCallback: (Throwable) -> Unit
+          ): T {
+            // function code here
+          }
+          ```
+    - When appropriate, use named function parameters (and new lines between arguments) to avoid confusion, for example:
+        - ```kotlin
+          val result = repository.calculate(
+            input = field.text,
+            errorMargin = user.settings.errorMargin,
+            validateInput = true,
+            retryTimes = 30,
+            retryEnabled = true
+          )
+          ```
+    - When appropriate, replace `null` checks with a `let` block
+    - When appropriate, use the `apply` scoping function as an inline function body to return the created object after invoking functions on it. A good example is having setters in a builder class:
+        - ```kotlin
+          fun withUsername(username: String) = apply {
+            this.username = username
+          }
+          ```
+    - When appropriate, use extension functions to make the code more readable
+    - Use Kotlin's collection utility functions to make the code more readable
+    - Use Kotlin's stream API and built-in functions like `filter`, `map`, etc.
+    - If possible, replace builders with constructors with named arguments and default argument values
+    - Be careful with `this` keyword and out-of-scope variables when using Kotlin's scoping functions 
 
-To help out everyone involved, we use this graphic to figure out Kotlin's scoping functions:
+We use this graphic to figure out Kotlin's scoping functions:
 
 ![Kotlin Scoping Functions](https://i.imgur.com/Ny9rJQR.png)
 
@@ -114,13 +137,13 @@ To help out everyone involved, we use this graphic to figure out Kotlin's scopin
 We convert the file using IDEA's built-in Java to Kotlin converter. After converting, we fix the following things:
 
 - Remove `internal` modifiers (keep only when really necessary)
-- Use `lateinit` where it's possible to do so
-- Remove generics where it's possible to do so (Kotlin is better at types)
+- Use `lateinit` where possible
+- Remove generics where possible (Kotlin is better at types)
 - Use `given` instead of `when` (or see project's docs for other rules)
-- Add `@JvmStatic` for companion (or plain) object functions which are used from Java code
+- Add `@JvmStatic` for companion (or plain) object functions that are used from Java code
 - Use default values in functions instead of overloading
 - Use `const` for constants in and out of companion objects 
-- Optimize imports and reformat file according to our style guides
+- Optimize imports and reformat file according to this style guide
 - Convert easily extractable functions with a single parameter to extension functions if appropriate
 - Replace multiple immediate setter function invocations with an `apply` block on the target
 - Replace multiple usages of a long-named variable with a `with` around it
@@ -128,35 +151,34 @@ We convert the file using IDEA's built-in Java to Kotlin converter. After conver
 - Replace incorrectly converted delegated getter properties with functions if necessary
 - In case of performance concerns, add `lazy` delegation if appropriate
 - Use function expressions for one-line functions
-- Remove single arguments from lambdas if they are not used, or replace them with `it` if used
-- Remove extra parentheses around lambda arguments if they are the only argument (pull lambdas out of parentheses)
+- Remove single arguments from lambdas if they aren't used, or replace them with `it` if used
+- Remove extra parentheses around lambda arguments if they are the only argument, i.e. pull lambdas out of parentheses
 - Use Kotlin's `emptyList()` and `listOf()`/`mutableListOf()` initializer functions instead of Java's `Collections` methods
 - Remove unnecessary type declarations generated by the converter
 - Use Kotlin's built-in `copy` function when converting `AutoValue` classes to data classes
 
-In case of doubt, contact the maintainers or check the project docs. For most projects, we will try to use a `lint` tool to verify that everything we do is per the guidelines above.
+When in doubt, contact the maintainers or check the project docs. For most projects, we will try to use a `lint` tool to verify that everything we do is per the guidelines above.
 
 ## Android-specific guidelines
 
 We have additional rules that apply to the Android platform:
 
-- Refer the inherited class in the subclasses, ie: use `Fragment`, `Activity`, `Adapter` suffixes.
+- Refer the inherited class in the subclasses (i.e. use `Fragment`, `Activity`, `Adapter` suffixes):
     - ```kotlin
-      class MainPage : Fragment()                    // BAD
-      class MainFragment : Fragment()                // GOOD
+      class MainPage : Fragment()                    // NICE
+      class MainFragment : Fragment()                // NOT NICE
       ```
     - ```java
-      public class MainPage extends Activity { }     // BAD
-      public class MainActivity extends Activity { } // GOOD
+      public class MainPage extends Activity { }     // NICE
+      public class MainActivity extends Activity { } // NOT NICE
       ```
 - Use a layered naming structure for String resources:
     - ```xml
       <string name="login_name">Your name:</string>
       ```
-- Where possible, use Kotlin Android Extensions:
-    - https://kotlinlang.org/docs/tutorials/android-plugin.html
-- Because we mostly use Kotlin Android Extensions, and this plugin generates synthetic delegated properties for finding views, we use `camelCase` naming convention (instead of Google-proposed `snake_case`) for view IDs in XML layouts
-- In order to avoid conflict and confusion, we use `{feature_name}{description}{view}` format, for example `loginNameLabel`, or `registrationBirthdayInput`
+- Where possible, use [Kotlin Android Extensions](https://kotlinlang.org/docs/tutorials/android-plugin.html)
+    - Because we mostly use Kotlin Android Extensions, and the plugin generates synthetic delegated properties for view finding, we use `camelCase` naming convention (instead of Google-proposed `snake_case`) for view IDs in XML layouts
+- To avoid conflict and confusion, we use `{feature_name}{description}{view}` format (for example `loginNameLabel`, or `registrationBirthdayInput`)
 - Closing tags should always be on a new line in XML layouts:
     - ```xml
       <TextView
@@ -165,20 +187,20 @@ We have additional rules that apply to the Android platform:
         android:layout_height="wrap_content"
         /> <!-- Closing tag is on a new line -->
       ```
-    - The reasoning behind this decision is: if you add attributes to XML in a way that the last attribute changes (or format code around the last attribute), the closing tag `/>` goes on a new line. This means that in code diff you will see an extra modification line, thus messing up the history (and `blame` results) for the future -- this is something we want to avoid
+    - We decided to use this approach to avoid messing up our git history. If you add attributes to XML that change the last attribute (or formats the code around the last attribute), then the closing tag `/>` goes on a new line. This means that you will see an extra modification in the code diff, which messes up the history and `blame` results.
 
-## Applying guidelines
+## Applying these guidelines
 
-To apply these guidelines, you can download our styling configuration files and import them to your IDE. Both Java and Kotlin style configurations are in this repository, named `java_code_style.xml` and `kotlin_code_style.xml`.
+To apply these guidelines to your own project clone, you can download our styling configuration files and import them to your IDE. Both Java and Kotlin style configurations are in this repository, named `java_code_style.xml` and `kotlin_code_style.xml`.
 
-To import, go to your IntelliJ IDEA (or Android Studio) Preferences, then Editor -> Code Style -> Java (or Kotlin, respectively) and on top of your right pane there will be an import button available. Just select the appropriate file and save. Verify from the dropdown menu that the appropriate style is being used.
+To import, go to your IntelliJ IDEA (or Android Studio) Preferences, then Editor -> Code Style -> Java (or Kotlin, respectively). On top of your right pane, there will be an import button available. Select the appropriate file and save. Verify from the dropdown menu that the appropriate style is being used.
 
-## Android testing
+## Testing on Android
 
 We run a suite of tests:
 
 - **Unit tests** for isolated units of code (we mock using Mockito)
-- **Functional tests** for isolated feature checks and user interaction tests, such as testing individual fragments or activities (usually using Espresso and Robot framework). These run offline in most cases, and external dependencies are mocked to behave in an expected way
+- **Functional tests** for isolated feature checks and UI tests - such as testing individual fragments or activities (usually using Espresso and Robot framework). In most cases, these run offline and external dependencies are mocked to behave in an expected way
 - **Acceptance tests**, a suite that builds on top of Functional tests, tests whole features in isolation. External dependencies are still mocked to behave in an expected way. We test all happy paths of all user stories
 - **Integration** (or **end-to-end** tests) where we test how our apps work while communicating with other (external) apps and services. These run online, in a staging environment, and we test the most business-oriented user stories
 
@@ -193,4 +215,4 @@ To set up your device for functional/acceptance tests:
 - Disable _auto-update_ for the Android OS
 - Disable Wi-Fi (functional tests run offline)
 
-For information on how to run test suites, refer to specific project documentation.
+For information on how to run test suites, refer to the specific project documentation.
