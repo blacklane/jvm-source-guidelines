@@ -1,4 +1,4 @@
-# Blacklane's JVM Source Guideliens
+# Blacklane's JVM Source Guidelines
 
 This document represents Blacklane Engineering's guidelines on writing code in JVM languages. 
 
@@ -28,23 +28,23 @@ A general rule is to keep the code as concise as possible but also make sure tha
 - Field/property notation: **None** (don't use the _`m`_ prefix as seen in Hungarian notation)
 
     - ```java
-      String mName; // NICE
-      String name; // NOT NICE
+      String name; // NICE
+      String mName; // NOT NICE
       ```
 
 - Maximum joined blank lines: **1**. 
     - In general, don't use unnecessary line breaks. Only use line breaks to separate code blocks or logical code groups
-- For tests annotated with `@Test`, don't use the `test` prefix in function name as it is unnecessary
+- For tests annotated with `@Test`, don't use the `test` prefix in the function name as it is unnecessary
 - Don't use any abbreviations. All declarations should be simple and clear:
     
     - ```java
-      LinearLayout llMain;                 // NICE
-      LinearLayout mainContainer;          // NOT NICE
+      LinearLayout mainContainer;          // NICE
+      LinearLayout llMain;                 // NOT NICE
       ```
 
     - ```kotlin
-      lateinit var txtName: TextView;      // NICE
-      lateinit var nameTextView: TextView; // NOT NICE
+      lateinit var nameTextView: TextView; // NICE
+      lateinit var txtName: TextView;      // NOT NICE
       ```
 
 - For single short annotations, write them in line with the function/method or field/parameter declaration:
@@ -61,7 +61,7 @@ A general rule is to keep the code as concise as possible but also make sure tha
       @UiThread fun escapeTheBugs() = runWithScissors()
       ```
 
-- Try to cover as much as your production code with tests. We don't need to go overboard, but we strive to have all code units properly tested. Each project will have its own testing rules so make sure you follow that same framework
+- Try to cover as much of your production code with tests as possible. We don't need to go overboard, but we strive to have all code units properly tested. Each project will have its own testing rules so make sure you follow that same framework
 
 ## Kotlin-specific guidelines
 
@@ -92,7 +92,7 @@ We have additional rules that apply to the Kotlin programming language:
       }
       ```
 
-- To make the code clean and readable, we have a couple of simple suggestions
+- To make the code clean and readable, we have a couple of suggestions:
     - Classes (data and regular) with multiple constructor arguments that span closer to our right margin (or over it) should be placed each on a new line, like so:
        
         - ```kotlin
@@ -123,7 +123,7 @@ We have additional rules that apply to the Kotlin programming language:
 
     - When appropriate, clean up function invocations
         - When it's not clear what arguments stand for in a function invocation, use named arguments to avoid confusion
-        - When a function accepts several arguments of the same type, use named arguments to improve readability and prevent accidentally swapped/shuffled arguments (this is especially important when refactoring)
+        - When a function accepts several arguments of the same type, use named arguments. This improves readability and prevents accidentally shuffled arguments (this is especially important when refactoring)
         
         - ```kotlin
           myFun(foo = "string 1", bar = "string 2", baz = bazObj)
@@ -171,7 +171,7 @@ We convert the file using IDEA's built-in Java to Kotlin converter. After conver
 - Convert easily extractable functions with a single parameter to extension functions if appropriate
 - Replace multiple immediate setter function invocations with an `apply` block on the target
 - Replace multiple usages of a long-named variable with a `with` around it
-- In interfaces and abstract classes, use `val` properties with getters only for truly immutable data, otherwise declare a getter function
+- In interfaces and abstract classes, use `val` properties with getters only for truly immutable data. Otherwise, declare a getter function
 - Replace incorrectly converted delegated getter properties with functions if necessary
 - In case of performance concerns, add `lazy` delegation if appropriate
 - Use function expressions for one-line functions
@@ -190,13 +190,13 @@ We have additional rules that apply to the Android platform:
 - Refer the inherited class in the subclasses (i.e. use `Fragment`, `Activity`, `Adapter` suffixes):
     
     - ```kotlin
-      class MainPage : Fragment()                    // NICE
-      class MainFragment : Fragment()                // NOT NICE
+      class MainFragment : Fragment()                // NICE
+      class MainPage : Fragment()                    // NOT NICE
       ```
 
     - ```java
-      public class MainPage extends Activity { }     // NICE
-      public class MainActivity extends Activity { } // NOT NICE
+      public class MainActivity extends Activity { } // NICE
+      public class MainPage extends Activity { }     // NOT NICE
       ```
 
 - Use a layered naming structure for String resources:
@@ -205,11 +205,10 @@ We have additional rules that apply to the Android platform:
       <string name="login_name">Your name:</string>
       ```
 
-- Where possible, use [Kotlin Android Extensions](https://kotlinlang.org/docs/tutorials/android-plugin.html)
-    - Because we mostly use Kotlin Android Extensions, and the plugin generates synthetic delegated properties for view finding, we use `camelCase` naming convention (instead of Google-proposed `snake_case`) for view IDs in XML layouts
+- We use [Kotlin Android Extensions](https://kotlinlang.org/docs/tutorials/android-plugin.html). Because the plugin generates synthetic delegated properties for view finding, we use `camelCase` naming convention (instead of Google-proposed `snake_case`) for view IDs in XML layouts
 - To avoid conflict and confusion, we use `{feature_name}{description}{view}` format (for example `loginNameLabel`, or `registrationBirthdayInput`)
 - Closing tags should always be on a new line in XML layouts:
-    
+
     - ```xml
       <TextView
         android:id="@+id/text_view"
@@ -222,7 +221,7 @@ We have additional rules that apply to the Android platform:
 
 ## Applying these guidelines
 
-To apply these guidelines to your own project clone, you can download our styling configuration files and import them to your IDE. Both Java and Kotlin style configurations are in this repository, named `java_code_style.xml` and `kotlin_code_style.xml`.
+To apply these guidelines to your own project clone, you can download our styling configuration files and import them to your IDE. Both Java and Kotlin style configurations are in this repository, named [java_code_style.xml](java_code_style.xml) and [kotlin_code_style.xml](kotlin_code_style.xml).
 
 To import, go to your IntelliJ IDEA (or Android Studio) Preferences, then Editor -> Code Style -> Java (or Kotlin, respectively). On top of your right pane, there will be an import button available. Select the appropriate file and save. Verify from the dropdown menu that the appropriate style is being used.
 
